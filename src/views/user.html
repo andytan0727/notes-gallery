@@ -1,0 +1,19 @@
+{% extends "templates/base.html" %}
+
+{% block styles %}
+{% endblock %}
+
+{% block content %}
+{% if user.id %}
+<div>
+  <h1>{{ user.id }}</h1>
+  <p>{{ user.username }}</p>
+</div>
+{% else %}
+<div>
+  <h1>User not found</h1>
+</div>
+{% endif %}
+
+
+{% endblock %}
