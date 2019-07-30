@@ -2,10 +2,9 @@
 
 namespace NotesGalleryApp\Repositories;
 
-use NotesGalleryApp\Interfaces\NoteRepositoryInterface;
 use NotesGalleryApp\Database\MySqlDB;
+use NotesGalleryApp\Interfaces\NoteRepositoryInterface;
 use NotesGalleryApp\Models\Note;
-use function NotesGalleryLib\helpers\generateID;
 use function NotesGalleryLib\helpers\sanitizeInput;
 
 class NoteRepository implements NoteRepositoryInterface
@@ -20,15 +19,19 @@ class NoteRepository implements NoteRepositoryInterface
     public function findOne(string $id): Note
     {
         $note = new Note();
+        $result = $this->db->findOneById($id, 'notes');
+        $note->id = $id;
+        $note->title = $result['title'];
+        $note->content = $result['content'];
+        $note->description = $result['description'];
+        $note->authorId = $result['authorId'];
 
         return $note;
     }
 
     public function findAll(): array
     {
-        $notes = [];
-
-        return $notes;
+        return $this->db->findAll('notes');
     }
 
     public function updateOne(Note $note)
@@ -45,18 +48,18 @@ class NoteRepository implements NoteRepositoryInterface
 
     public function save(Note $note)
     {
-        // escape
-        $note->id = $this->db->escape(generateID());
-        $note->title = $this->db->escape($note->title);
-        $note->content = $this->db->escape($note->content);
-        $note->description = $this->db->escape($note->description);
-        $note->authorId = $this->db->escape($note->authorId);
+        if (!isset($note->authorId)) {
+            throw new \Exception('Author id is not defined');
+        }
 
-        // sanitize
-        $noteId = sanitizeInput($note->id);
-        $title = sanitizeInput($note->title);
-        $content = sanitizeInput($note->content);
-        $description = sanitizeInput($note->description);
-        $authorId = sanitizeInput($note->authorId);
+        $noteId = $note->id;
+        $title = $this->db->escape(sanitizeInput($note->title));
+        $content = $this->db->escape(sanitizeInput($note->content));
+        $description = $this->db->escape(sanitizeInput($note->description));
+        $authorId = $note->authorId;
+
+        $mysqli = $this->db->getDBInstance();
+
+        return $mysqli->query("INSERT INTO notes VALUES ('$noteId', '$title', '$content', '$description', '$authorId')");
     }
 }
