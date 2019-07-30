@@ -23,6 +23,7 @@ class UserRepository implements UserRepositoryInterface
         $user->id = $result['id'];
         $user->username = $result['username'];
         $user->password = $result['password'];
+        $user->token = $result['token'];
         return $user;
     }
 
@@ -71,10 +72,6 @@ class UserRepository implements UserRepositoryInterface
         // persist to database
         $mysqli = $this->db->getDBInstance();
 
-        $res = $mysqli->query("INSERT INTO users VALUES ('$id', '$username', '$password', '$token')");
-
-        if (!$res) {
-            throw new \Exception('Error saving user');
-        }
+        return $mysqli->query("INSERT INTO users VALUES ('$id', '$username', '$password', '$token')");
     }
 }

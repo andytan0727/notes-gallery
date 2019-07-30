@@ -35,7 +35,11 @@ class UserController extends BaseController
         $user->token = generateToken($user->id);
 
         // save to database
-        $this->userRepo->save($user);
+        $result = $this->userRepo->save($user);
+
+        if (!$result) {
+            return $this->response->withStatus(502);
+        }
 
         // Set token to cookie
         setcookie('TOKEN', $user->token, strtotime('+30 days'), '/');
