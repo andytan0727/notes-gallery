@@ -4,7 +4,8 @@
   <div class="navbar-nav d-flex align-items-center">
 
     {% if cookie['TOKEN'] %}
-      <div>Logged in</div>
+      <div>Logged in as
+        {{ session['CURRENT_USER_NAME'] }}</div>
     {% else %}
       <a class="nav-item nav-link" href="/login">Login</a>
       <span>

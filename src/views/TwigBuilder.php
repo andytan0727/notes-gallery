@@ -22,7 +22,10 @@ class TwigBuilder
             'debug' => true
         ]);
         $this->twig->addExtension(new DebugExtension());
+
+        // add global cookie and session variable access to twig template
         $this->twig->addGlobal('cookie', $_COOKIE);
+        $this->twig->addGlobal('session', $_SESSION);
     }
 
     public function getTwig()

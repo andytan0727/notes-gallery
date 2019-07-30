@@ -1,5 +1,4 @@
 <?php
-
 declare(strict_types=1);
 
 use DI\ContainerBuilder;
@@ -10,15 +9,15 @@ use Narrowspark\HttpEmitter\SapiEmitter;
 use Relay\Relay;
 use Zend\Diactoros\ServerRequestFactory;
 
-require_once dirname(__DIR__) . '/vendor/autoload.php';
-
 // load environment variables from .env
 $dotenv = Dotenv::create(dirname(__DIR__));
 $dotenv->load();
 
+// init DI container
 $containerBuilder = new ContainerBuilder();
 $container = $containerBuilder->build();
 
+// FastRoute
 $dispatcher = require_once dirname(__DIR__) . '/src/routes/PageRoutes.php';
 
 $route = $dispatcher->dispatch(
@@ -38,6 +37,7 @@ switch ($route[0]) {
         break;
 };
 
+// Middlewares (Route & Request handler)
 $middlewareQueue = [];
 $middlewareQueue[] = new FastRoute($dispatcher);
 $middlewareQueue[] = new RequestHandler($container);
