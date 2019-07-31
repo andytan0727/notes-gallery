@@ -5,7 +5,7 @@ use FastRoute\RouteCollector;
 use function FastRoute\simpleDispatcher;
 use NotesGalleryApp\Controllers\UserController;
 use NotesGalleryApp\Controllers\NoteController;
-use NotesGalleryApp\Controllers\RegistrationController;
+use NotesGalleryApp\Controllers\AuthController;
 
 return simpleDispatcher(function (RouteCollector $r) {
     $r->addRoute('GET', '/', [HomeController::class, 'index']);
@@ -18,7 +18,7 @@ return simpleDispatcher(function (RouteCollector $r) {
     $r->addRoute('GET', '/users', [UserController::class, 'show']);
     $r->addRoute('GET', '/users/{id}', [UserController::class, 'showOne']);
 
-    $r->addRoute('GET', '/register', [RegistrationController::class, 'register']);
+    $r->addRoute('GET', '/register', [AuthController::class, 'register']);
 
     // note
     $r->addRoute('POST', '/notes/create', [NoteController::class, 'create']);

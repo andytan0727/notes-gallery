@@ -2,11 +2,14 @@
 
 namespace NotesGalleryApp\Controllers;
 
-use ReallySimpleJWT\Token;
-
 class AuthController extends BaseController
 {
-    public function validateJWT($token)
+    public function register()
     {
+        $response = $this->response->withHeader('Content-Type', 'text/html');
+        $rendered = $this->twig->render('register.html');
+        $response->getBody()->write($rendered);
+
+        return $response;
     }
 }
