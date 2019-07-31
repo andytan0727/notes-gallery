@@ -7,6 +7,8 @@ use NotesGalleryApp\Models\User;
 use NotesGalleryApp\Views\TwigBuilder;
 use Psr\Http\Message\ServerRequestInterface;
 use zend\Diactoros\Response;
+use Zend\Diactoros\Response\TextResponse;
+use Zend\Diactoros\Response\EmptyResponse;
 use function NotesGalleryLib\helpers\generateToken;
 use function NotesGalleryLib\helpers\generateID;
 
@@ -22,8 +24,6 @@ class UserController extends BaseController
 
     public function create(ServerRequestInterface $serverRequest)
     {
-        $domain = ($_SERVER['HTTP_HOST'] != 'localhost') ? $_SERVER['HTTP_HOST'] : false;
-
         // get posted data (username & password)
         $parsedBody = $serverRequest->getParsedBody();
 
@@ -37,17 +37,18 @@ class UserController extends BaseController
         // save to database
         $result = $this->userRepo->save($user);
 
+        // return error response to client if user exists
         if (!$result) {
-            return $this->response->withStatus(502);
+            return new TextResponse('Error creating user. Probably user exists', 502);
         }
 
-        // Set token to cookie
+        // // Set token to cookie if successfully save user to database
         setcookie('TOKEN', $user->token, strtotime('+30 days'), '/');
 
-        // redirect to home
-        $redirectUrl = 'location: ' . "http://$domain";
-        header($redirectUrl);
-        exit();
+        // Return 201 created response if successfully created user
+        return new EmptyResponse(201, [
+            'Location' => ['/']
+        ]);
     }
 
     public function show()
