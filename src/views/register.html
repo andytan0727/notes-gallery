@@ -1,0 +1,52 @@
+{% extends "templates/base.html" %}
+
+{% block content %}
+  <form accept-charset="UTF-8" action="/users/create" class="registration-form container mt-5 h-50" method="POST">
+    <div class="alert alert-warning alert-dismissible fade show" role="alert" style="display:none;">
+      <strong>
+        <span class="error-text"></span>
+      </strong>
+      <button aria-label="Close" class="close" data-dismiss="alert" type="button">
+        <span aria-hidden="true">&times;</span>
+      </button>
+    </div>
+
+    {% include "templates/userForm.html" %}
+
+    <button class="btn btn-primary" type="submit">Register</button>
+  </form>
+
+{% endblock %}
+
+{% block scripts %}
+  <script>
+    window.onload = function () {
+      $('.registration-form').submit(function (event) {
+        event.preventDefault();
+
+        const form = $(this);
+        const url = form.attr('action');
+
+        $.ajax({
+          type: "POST",
+          url,
+          data: form.serialize(),
+          success: function (data, status, xhr) {
+            const redirectUrl = xhr.getResponseHeader('Location');
+            alert('Successfully created user');
+            window.location.replace(redirectUrl);
+          },
+          error: function (xhr) {
+            $('.alert').css({display: 'block'});
+            $('.error-text').text(xhr.responseText);
+          },
+          complete: function (xhr) {
+            form.trigger('reset'); // reset form fields after ajax success/failure
+          }
+        });
+      })
+    }
+  </script>
+
+
+{% endblock %}
