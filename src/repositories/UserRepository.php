@@ -69,9 +69,17 @@ class UserRepository implements UserRepositoryInterface
         // hashing password
         $password = password_hash($password, PASSWORD_BCRYPT);
 
-        // persist to database
         $mysqli = $this->db->getDBInstance();
 
+        // check if user exists with the same username
+        $userExists = $mysqli->query('SELECT * FROM users WHERE username = ' . "'$username'");
+
+        // return if exists
+        if (mysqli_num_rows($userExists) !== 0) {
+            return false;
+        }
+
+        // save to database if user not exists before
         return $mysqli->query("INSERT INTO users VALUES ('$id', '$username', '$password', '$token')");
     }
 }
