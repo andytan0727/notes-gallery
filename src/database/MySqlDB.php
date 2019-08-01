@@ -3,7 +3,6 @@
 namespace NotesGalleryApp\Database;
 
 use NotesGalleryApp\Interfaces\DatabaseInterface;
-use PDO;
 use mysqli;
 
 class MySqlDB implements DatabaseInterface
@@ -29,6 +28,13 @@ class MySqlDB implements DatabaseInterface
         }
     }
 
+    /**
+     * Find one entry of a table
+     *
+     * @param string $id Id of the entry
+     * @param string $table Table to be queried
+     * @return array|null
+     */
     public function findOneById(string $id, string $table)
     {
         $escapedId = $this->db->real_escape_string($id);
@@ -37,20 +43,39 @@ class MySqlDB implements DatabaseInterface
         return $result->fetch_assoc();
     }
 
-    public function findAll(string $table)
+    /**
+     * Find all entries of a table
+     *
+     * @param string $table Table to be queried
+     * @return array
+     */
+    public function findAll(string $table): array
     {
         $escapedTable = $this->db->real_escape_string($table);
+
         $result = $this->db->query('SELECT * FROM ' . $escapedTable);
-        return $result->fetch_all();
+
+        return $result ? $result->fetch_all() : [];
     }
 
+    /**
+     * Escape supplied string
+     *
+     * @param string $oriStr String to be escaped
+     * @return string
+     */
     public function escape(string $oriStr): string
     {
         return $this->db->real_escape_string($oriStr);
     }
 
-    public function getDBInstance()
+    /**
+     * Generic query using mysqli
+     *
+     * @param string $sql Query statement to be passed to mysqli query
+     */
+    public function query(string $sql)
     {
-        return $this->db;
+        return $this->db->query($sql);
     }
 }

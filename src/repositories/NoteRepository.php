@@ -58,8 +58,6 @@ class NoteRepository implements NoteRepositoryInterface
         $description = $this->db->escape(sanitizeInput($note->description));
         $authorId = $note->authorId;
 
-        $mysqli = $this->db->getDBInstance();
-
-        return $mysqli->query("INSERT INTO notes VALUES ('$noteId', '$title', '$content', '$description', '$authorId')");
+        return $this->db->query("INSERT INTO notes VALUES ('$noteId', '$title', '$content', '$description', '$authorId')");
     }
 }
