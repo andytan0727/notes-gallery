@@ -1,0 +1,15 @@
+{% extends "templates/base.html" %}
+
+{% block content %}
+  <div class="container mt-5">
+    <div class="header">
+      <h1 class="display-3">{{ note.title }}</h1>
+      <p class="text-muted">{{ note.description }}</p>
+    </div>
+
+    <main class="mt-5">
+      {{ note.content }}
+    </main>
+  </div>
+
+{% endblock %}

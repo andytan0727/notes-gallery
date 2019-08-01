@@ -47,4 +47,20 @@ class NoteController extends BaseController
 
         return $this->response->withStatus(502);
     }
+
+    public function showOne(ServerRequestInterface $request)
+    {
+        $id = $request->getAttribute('id');
+        $note = $this->noteRepo->findOne($id);
+
+        if ($note->authorId !== $_SESSION['CURRENT_USER_ID']) {
+            return $this->response->withStatus(401, 'User Unauthorized');
+        }
+
+        $rendered = $this->twig->render('note.html', ['note' => $note]);
+        $response = $this->response->withHeader('Content-Type', 'text/html');
+        $response->getBody()->write($rendered);
+
+        return $response;
+    }
 }
