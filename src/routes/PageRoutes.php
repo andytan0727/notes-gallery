@@ -1,25 +1,27 @@
 <?php
 
+use NotesGalleryApp\Controllers\AuthController;
 use NotesGalleryApp\Controllers\HomeController;
+use NotesGalleryApp\Controllers\NoteController;
+use NotesGalleryApp\Controllers\UserController;
 use FastRoute\RouteCollector;
 use function FastRoute\simpleDispatcher;
-use NotesGalleryApp\Controllers\UserController;
-use NotesGalleryApp\Controllers\NoteController;
-use NotesGalleryApp\Controllers\AuthController;
 
 return simpleDispatcher(function (RouteCollector $r) {
     $r->addRoute('GET', '/', [HomeController::class, 'index']);
-    $r->addRoute('GET', '/login', function () {
-        echo 'hello';
-    });
+
+    // auth
+    $r->addRoute('GET', '/register', [AuthController::class, 'registerView']);
+    $r->addRoute('GET', '/login', [AuthController::class, 'loginView']);
+    $r->addRoute('POST', '/login', [AuthController::class, 'loginUser']);
 
     // user
     $r->addRoute('POST', '/users/create', [UserController::class, 'create']);
     $r->addRoute('GET', '/users', [UserController::class, 'show']);
-    $r->addRoute('GET', '/users/{id}', [UserController::class, 'showOne']);
 
-    $r->addRoute('GET', '/register', [AuthController::class, 'register']);
+    $r->addRoute('GET', '/users/{id}', [UserController::class, 'showOne']);
 
     // note
     $r->addRoute('POST', '/notes/create', [NoteController::class, 'create']);
+    $r->addRoute('GET', '/notes/{id}', [NoteController::class, 'showOne']);
 });
