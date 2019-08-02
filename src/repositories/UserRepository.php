@@ -27,6 +27,34 @@ class UserRepository implements UserRepositoryInterface
         return $user;
     }
 
+    /**
+     * Find one user by username. Return null if unable to find
+     *
+     * @param string $username
+     * @return User|null
+     */
+    public function findOneByUsername(string $username)
+    {
+        $result = $this->db->query('SELECT * FROM users WHERE username = ' . "'$username'");
+
+        if ($result->num_rows === 0) {
+            return null;
+        }
+
+        $userFromDB = $result->fetch_assoc();
+        $user = new User();
+        $user->id = $userFromDB['id'];
+        $user->username = $userFromDB['username'];
+        $user->password = $userFromDB['password'];
+        $user->token = $userFromDB['token'];
+        return $user;
+    }
+
+    /**
+     * Find all users
+     *
+     * @return array
+     */
     public function findAll(): array
     {
         $users = [];
@@ -54,6 +82,28 @@ class UserRepository implements UserRepositoryInterface
     {
     }
 
+    /**
+     * Verify user password
+     *
+     * @param string $username
+     * @param string $password
+     * @return bool
+     */
+    public function verifyUser(string $username, string $password): bool
+    {
+        // sanitize and escape input
+        $username = sanitizeInput($this->db->escape($username));
+        $password = sanitizeInput($this->db->escape($password));
+
+        // query hashed password in database
+        $query = $this->db->query('SELECT password FROM users WHERE username = ' . "'$username'");
+
+        $dbPassword = $query->fetch_assoc()['password'];
+
+        // return verified result
+        return password_verify($password, $dbPassword);
+    }
+
     public function save(User $user)
     {
         // escape
@@ -69,17 +119,15 @@ class UserRepository implements UserRepositoryInterface
         // hashing password
         $password = password_hash($password, PASSWORD_BCRYPT);
 
-        $mysqli = $this->db->getDBInstance();
-
         // check if user exists with the same username
-        $userExists = $mysqli->query('SELECT * FROM users WHERE username = ' . "'$username'");
+        $userExists = $this->db->query('SELECT * FROM users WHERE username = ' . "'$username'");
 
         // return if exists
-        if (mysqli_num_rows($userExists) !== 0) {
+        if ($userExists->num_rows !== 0) {
             return false;
         }
 
         // save to database if user not exists before
-        return $mysqli->query("INSERT INTO users VALUES ('$id', '$username', '$password', '$token')");
+        return $this->db->query("INSERT INTO users VALUES ('$id', '$username', '$password', '$token')");
     }
 }
