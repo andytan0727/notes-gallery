@@ -3,16 +3,17 @@
   <div class="mr-auto"></div>
   <div class="navbar-nav d-flex align-items-center">
 
-    {% if cookie['TOKEN'] %}
+    {% if session['LOGGED_IN'] %}
       <div>Logged in as
         {{ session['CURRENT_USER_NAME'] }}</div>
     {% else %}
-      <a class="nav-item nav-link" href="/login">Login</a>
-      <span>
-        or
-      </span>
-      <a class="nav-item nav-link" href="/register">Register</a>
+      <div class="d-flex align-items-center">
+        <a class="nav-item nav-link" href="/login">Login</a>
+        <span>
+          &nbsp; or &nbsp;
+        </span>
+        <a class="nav-item nav-link" href="/register">Register</a>
+      </div>
     {% endif %}
-
   </div>
 </nav>
