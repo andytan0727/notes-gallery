@@ -1,0 +1,43 @@
+{% extends "templates/base.html" %}
+
+{% block content %}
+  <form action="/notes/create" class="note-form container mt-5">
+    {{ include('templates/errorMessage.html') }}
+
+    {{ include('templates/noteForm.html') }}
+
+    <button class="note-form-submit-btn btn btn-primary">Submit</button>
+  </form>
+{% endblock %}
+
+{% block scripts %}
+  <script>
+    window.addEventListener('load', function () {
+      $('.note-form').submit(function (event) {
+        event.preventDefault();
+
+        const noteForm = $(this);
+        const url = noteForm.attr('action');
+
+        $.ajax({
+          type: 'POST',
+          url,
+          data: noteForm.serialize(),
+          success: function (data, status, xhr) {
+            alert('Successfully saved your note!');
+          },
+          error: function (xhr) {
+            $('.alert').css({display: 'block'});
+            if (xhr.status === 409) {
+              $('.error-text').text('Please login to save!');
+            }
+
+            if (xhr.status === 500) {
+              $('.error-text').text('Unexpected error occurred');
+            }
+          }
+        });
+      });
+    });
+  </script>
+{% endblock %}

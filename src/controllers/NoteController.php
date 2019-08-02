@@ -2,11 +2,12 @@
 
 namespace NotesGalleryApp\Controllers;
 
+use NotesGalleryApp\Models\Note;
 use NotesGalleryApp\Repositories\NoteRepository;
 use NotesGalleryApp\Views\TwigBuilder;
 use Psr\Http\Message\ServerRequestInterface;
 use Zend\Diactoros\Response;
-use NotesGalleryApp\Models\Note;
+use Zend\Diactoros\Response\EmptyResponse;
 use function NotesGalleryLib\helpers\generateID;
 
 class NoteController extends BaseController
@@ -23,6 +24,12 @@ class NoteController extends BaseController
     {
         $currentUserId = $_SESSION['CURRENT_USER_ID'];
 
+        // user needs to be logged in to save note
+        // return 409 conflict for user to resubmit the form after login
+        if (!$currentUserId) {
+            return new EmptyResponse(409);
+        }
+
         $parsedBody = $serverRequest->getParsedBody();
 
         $note = new Note();
@@ -34,18 +41,22 @@ class NoteController extends BaseController
 
         $result = $this->noteRepo->save($note);
 
+        // 201 created if everything goes well
         if ($result) {
-            $response = $this->response
-                          ->withStatus(200)
-                          ->withHeader(
-                              'Content-Type',
-                              'application/json'
-                          );
-            $response->getBody()->write(json_encode($note));
-            return $response;
+            return new EmptyResponse(201);
         }
 
-        return $this->response->withStatus(502);
+        // status 500 if something unexpected occurs on database or server side
+        return new EmptyResponse(500);
+    }
+
+    public function edit()
+    {
+        $response = $this->response->withHeader('Content-Type', 'text/html');
+        $rendered = $this->twig->render('notes/editNote.html');
+        $response->getBody()->write($rendered);
+
+        return $response;
     }
 
     public function showOne(ServerRequestInterface $request)
