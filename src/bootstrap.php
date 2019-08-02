@@ -20,9 +20,18 @@ $container = $containerBuilder->build();
 // FastRoute
 $dispatcher = require_once dirname(__DIR__) . '/src/routes/PageRoutes.php';
 
+$httpMethod = $_SERVER['REQUEST_METHOD'];
+$uri = $_SERVER['REQUEST_URI'];
+
+// handle query params
+if (false !== $pos = strpos($uri, '?')) {
+    $uri = substr($uri, 0, $pos);
+}
+$uri = rawurldecode($uri);
+
 $route = $dispatcher->dispatch(
-    $_SERVER['REQUEST_METHOD'],
-    $_SERVER['REQUEST_URI']
+    $httpMethod,
+    $uri
 );
 
 switch ($route[0]) {
