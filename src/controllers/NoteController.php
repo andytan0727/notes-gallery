@@ -8,6 +8,7 @@ use NotesGalleryApp\Views\TwigBuilder;
 use Psr\Http\Message\ServerRequestInterface;
 use Zend\Diactoros\Response;
 use Zend\Diactoros\Response\EmptyResponse;
+use Zend\Diactoros\Response\HtmlResponse;
 use function NotesGalleryLib\helpers\generateID;
 
 class NoteController extends BaseController
@@ -52,26 +53,57 @@ class NoteController extends BaseController
 
     public function edit()
     {
-        $response = $this->response->withHeader('Content-Type', 'text/html');
         $rendered = $this->twig->render('notes/editNote.html');
-        $response->getBody()->write($rendered);
 
-        return $response;
+        return new HtmlResponse($rendered);
     }
 
-    public function showOne(ServerRequestInterface $request)
+    public function show(ServerRequestInterface $request)
     {
-        $id = $request->getAttribute('id');
-        $note = $this->noteRepo->findOne($id);
+        $queryParams = $request->getQueryParams();
 
-        if ($note->authorId !== $_SESSION['CURRENT_USER_ID']) {
-            return $this->response->withStatus(401, 'User Unauthorized');
+        // get note by noteId
+        if (isset($queryParams['id'])) {
+            $noteId = $queryParams['id'];
+            return  $this->showOneByNoteId($noteId);
         }
 
-        $rendered = $this->twig->render('notes/note.html', ['note' => $note]);
-        $response = $this->response->withHeader('Content-Type', 'text/html');
-        $response->getBody()->write($rendered);
+        // get notes by authorId
+        elseif (isset($queryParams['authorId'])) {
+            $authorId = $queryParams['authorId'];
+            return $this->showByAuthorId($authorId);
+        }
 
-        return $response;
+        // if no query params supplied
+        elseif (empty($queryParams)) {
+            return $this->showAllNotes();
+        }
+    }
+
+    private function showOneByNoteId(string $noteId)
+    {
+        $note = $this->noteRepo->findOne($noteId);
+
+        $rendered = $this->twig->render('notes/note.html', ['note' => $note]);
+        return new HtmlResponse($rendered);
+    }
+
+    private function showByAuthorId(string $authorId)
+    {
+        $notes = $this->noteRepo->findAllByAuthorId($authorId);
+
+        // get notes' author name to display on view
+        $noteAuthor = $this->noteRepo->findNoteAuthorById($authorId);
+
+        $rendered = $this->twig->render('notes/noteCards.html', ['notes' => $notes, 'author' => $noteAuthor]);
+        return new HtmlResponse($rendered);
+    }
+
+    private function showAllNotes()
+    {
+        $notesWithUsername = $this->noteRepo->findNotesWithUsername();
+
+        $rendered = $this->twig->render('notes/noteCards.html', ['notes' => $notesWithUsername]);
+        return new HtmlResponse($rendered);
     }
 }

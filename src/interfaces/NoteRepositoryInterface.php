@@ -8,7 +8,13 @@ interface NoteRepositoryInterface
 {
     public function findOne(string $id): Note;
 
-    public function findAll(): array;
+    public function findAll();
+
+    public function findAllByAuthorId(string $authorId);
+
+    public function findNotesWithUsername();
+
+    public function findNoteAuthorById(string $authorId);
 
     public function updateOne(Note $note);
 

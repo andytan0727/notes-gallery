@@ -3,6 +3,10 @@
 {% block content %}
   <div class="d-flex flex-column justify-content-center align-items-center h-75 ">
     <h1 class="display-1">Notes Gallery</h1>
-    <button class="btn btn-lg btn-outline-primary mt-5">Start Now</button>
+    <div class="row">
+      <a class="home-create-note-btn btn btn-lg btn-outline-primary mt-5" href="/notes/edit">Create New Note</a>
+      <a class="home-view-note-btn btn btn-lg btn-outline-secondary mt-5 ml-5" href="/notes">View Notes</a>
+    </div>
+
   </div>
 {% endblock %}

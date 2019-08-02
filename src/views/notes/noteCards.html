@@ -1,0 +1,46 @@
+{% extends "templates/base.html" %}
+
+{% block content %}
+  <div class="container mt-5">
+    {% if author is not empty %}
+      <h1>Notes by
+        {{ author.username }}</h1>
+    {% else %}
+      <h1>All Notes</h1>
+    {% endif %}
+
+    {% if notes is not empty %}
+      <div class="card-deck mt-5">
+        {% for note in notes %}
+          <div class="card border-dark">
+            <div class="card-header">
+              Note
+            </div>
+            <div class="card-body text-dark">
+              <h2 class="card-title bg-transparent">{{ note.title }}</h2>
+              <h6 class="card-subtitle mb-4 text-muted">{{ note.description }}</h6>
+              <p class="card-text">
+                {{ note.content|length > 100
+                  ? note.content|slice(0,100) ~ '...' : note.content }}
+              </p>
+
+
+              {% if note.username is not empty %}
+                <footer class="text-muted mb-3">by
+                  {{ note.username }}
+                </footer>
+              {% endif %}
+
+              <a class="btn btn-primary" href="#">Go to Note</a>
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+    {% else %}
+      <h2 class="mt-5">No notes</h2>
+      <a class="btn btn-danger mt-3" href="/notes">Return</a>
+    {% endif %}
+
+
+  </div>
+{% endblock %}
