@@ -6,8 +6,10 @@ use NotesGalleryApp\Views\TwigBuilder;
 use NotesGalleryApp\Repositories\UserRepository;
 use Psr\Http\Message\ServerRequestInterface;
 use Zend\Diactoros\Response;
+use Zend\Diactoros\Response\EmptyResponse;
 use function NotesGalleryLib\helpers\saveUserTokenToCookie;
 use function NotesGalleryLib\helpers\saveUserToSession;
+use function NotesGalleryLib\helpers\destroyTokenCookie;
 
 class AuthController extends BaseController
 {
@@ -59,5 +61,22 @@ class AuthController extends BaseController
         saveUserToSession($user);
 
         return $this->response->withStatus(200);
+    }
+
+    public function logoutUser(ServerRequestInterface $request)
+    {
+        $userId = $request->getQueryParams()['id'];
+
+        // return 200 OK if successfully logout user
+        if (isset($_SESSION['LOGGED_IN']) && $userId === $_SESSION['CURRENT_USER_ID']) {
+            // destroy session and token cookie
+            session_destroy();
+            destroyTokenCookie();
+
+            return new EmptyResponse(200);
+        }
+
+        // else, return 409 Conflict response
+        return new EmptyResponse(409);
     }
 }

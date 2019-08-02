@@ -12,7 +12,7 @@
         </div>
 
         <div aria-labelledby="navbarDropdown" class="dropdown-menu" style="position: absolute; min-width: 0rem;">
-          <a class="dropdown-item" href="/logout">Logout</a>
+          <a class="logout-anchor dropdown-item" href="/logout?id={{ session['CURRENT_USER_ID'] }}">Logout</a>
         </div>
       </li>
     {% else %}
@@ -26,3 +26,27 @@
     {% endif %}
   </div>
 </nav>
+
+{% block scripts %}
+  <script>
+    window.onload = function () {
+      $('.logout-anchor').click(function (event) {
+        event.preventDefault();
+
+        const logoutAnchor = $(this);
+        const url = logoutAnchor.attr('href');
+
+        $.ajax({
+          type: 'POST',
+          url,
+          success: function (data, status, xhr) {
+            window.location.replace('/');
+          },
+          error: function (xhr) {
+            alert('Unexpected error during logout.');
+          }
+        });
+      });
+    }
+  </script>
+{% endblock %}

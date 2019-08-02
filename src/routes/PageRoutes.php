@@ -14,6 +14,7 @@ return simpleDispatcher(function (RouteCollector $r) {
     $r->addRoute('GET', '/register', [AuthController::class, 'registerView']);
     $r->addRoute('GET', '/login', [AuthController::class, 'loginView']);
     $r->addRoute('POST', '/login', [AuthController::class, 'loginUser']);
+    $r->addRoute('POST', '/logout', [AuthController::class, 'logoutUser']);
 
     // user
     $r->addRoute('POST', '/users/create', [UserController::class, 'create']);

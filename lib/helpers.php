@@ -54,6 +54,13 @@ if (!function_exists('saveUserTokenToCookie')) {
     }
 }
 
+if (!function_exists('destroyTokenCookie')) {
+    function destroyTokenCookie()
+    {
+        setcookie('TOKEN', '', time() - 3600, '/');
+    }
+}
+
 if (!function_exists('saveUserToSession')) {
     function saveUserToSession(User $user)
     {
