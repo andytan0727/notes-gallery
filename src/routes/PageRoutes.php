@@ -17,12 +17,15 @@ return simpleDispatcher(function (RouteCollector $r) {
     $r->addRoute('POST', '/logout', [AuthController::class, 'logoutUser']);
 
     // user
-    $r->addRoute('POST', '/users/create', [UserController::class, 'create']);
-    $r->addRoute('GET', '/users', [UserController::class, 'show']);
-
-    $r->addRoute('GET', '/users/{id}', [UserController::class, 'showOne']);
+    $r->addGroup('/users', function (RouteCollector $r) {
+        $r->addRoute('GET', '', [UserController::class, 'show']);
+        $r->addRoute('GET', '/{id}', [UserController::class, 'showOne']);
+        $r->addRoute('POST', '/create', [UserController::class, 'create']);
+    });
 
     // note
-    $r->addRoute('POST', '/notes/create', [NoteController::class, 'create']);
-    $r->addRoute('GET', '/notes/{id}', [NoteController::class, 'showOne']);
+    $r->addGroup('/notes', function (RouteCollector $r) {
+        $r->addRoute('POST', '/create', [NoteController::class, 'create']);
+        $r->addRoute('GET', '/{id}', [NoteController::class, 'showOne']);
+    });
 });
