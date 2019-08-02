@@ -22,7 +22,7 @@ class AuthController extends BaseController
     public function registerView()
     {
         $response = $this->response->withHeader('Content-Type', 'text/html');
-        $rendered = $this->twig->render('register.html');
+        $rendered = $this->twig->render('auth/register.html');
         $response->getBody()->write($rendered);
 
         return $response;
@@ -31,7 +31,7 @@ class AuthController extends BaseController
     public function loginView()
     {
         $response = $this->response->withHeader('Content-Type', 'text/html');
-        $rendered = $this->twig->render('login.html');
+        $rendered = $this->twig->render('auth/login.html');
         $response->getBody()->write($rendered);
 
         return $response;

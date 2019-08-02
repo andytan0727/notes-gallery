@@ -57,7 +57,7 @@ class NoteController extends BaseController
             return $this->response->withStatus(401, 'User Unauthorized');
         }
 
-        $rendered = $this->twig->render('note.html', ['note' => $note]);
+        $rendered = $this->twig->render('notes/note.html', ['note' => $note]);
         $response = $this->response->withHeader('Content-Type', 'text/html');
         $response->getBody()->write($rendered);
 

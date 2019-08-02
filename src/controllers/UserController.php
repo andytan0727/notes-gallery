@@ -62,7 +62,7 @@ class UserController extends BaseController
     {
         $allUsers = $this->userRepo->findAll();
         $response = $this->response->withHeader('Content-Type', 'text/html');
-        $rendered = $this->twig->render('users.html', ['users' => $allUsers]);
+        $rendered = $this->twig->render('users/users.html', ['users' => $allUsers]);
         $response->getBody()->write($rendered);
 
         return $response;
@@ -73,7 +73,7 @@ class UserController extends BaseController
         $id = $request->getAttribute('id');
         $userSelected = $this->userRepo->findOne($id);
         $response = $this->response->withHeader('Content-Type', 'text/html');
-        $rendered = $this->twig->render('user.html', ['user' => $userSelected]);
+        $rendered = $this->twig->render('users/user.html', ['user' => $userSelected]);
         $response->getBody()->write($rendered);
 
         return $response;
