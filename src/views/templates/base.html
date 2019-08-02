@@ -14,9 +14,9 @@
     </head>
 
     <body>
-      {% include "templates/header.html" %}
+      {{ include("templates/header.html") }}
       {% block content %}{% endblock %}
-      {% include "templates/footer.html" %}
+      {{ include("templates/footer.html") }}
 
       <!-- Bootstrap & jquery -->
       <script crossorigin="anonymous" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" src="https://code.jquery.com/jquery-3.4.1.min.js"></script>

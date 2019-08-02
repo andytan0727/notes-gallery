@@ -3,13 +3,9 @@
 {% block content %}
   {% if session['LOGGED_IN'] is empty %}
     <form action="/login" class="login-form container mt-5">
-      <div class="alert alert-warning" role="alert" style="display: none;">
-        <strong>
-          <span class="error-text"></span>
-        </strong>
-      </div>
+      {{ include("templates/errorMessage.html") }}
 
-      {% include "templates/userForm.html" %}
+      {{ include("templates/userForm.html") }}
 
       <button class="btn btn-primary" type="submit">Login</button>
     </form>
@@ -23,7 +19,7 @@
 
 {% block scripts %}
   <script>
-    window.onload = function () {
+    window.addEventListener('load', function () {
       $('.login-form').submit(function (event) {
         event.preventDefault();
 
@@ -59,7 +55,7 @@
         event.preventDefault();
 
         window.location.replace('/');
-      })
-    }
+      });
+    });
   </script>
 {% endblock %}
