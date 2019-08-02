@@ -11,6 +11,8 @@ use Zend\Diactoros\Response\TextResponse;
 use Zend\Diactoros\Response\EmptyResponse;
 use function NotesGalleryLib\helpers\generateToken;
 use function NotesGalleryLib\helpers\generateID;
+use function NotesGalleryLib\helpers\saveUserTokenToCookie;
+use function NotesGalleryLib\helpers\saveUserToSession;
 
 class UserController extends BaseController
 {
@@ -42,8 +44,11 @@ class UserController extends BaseController
             return new TextResponse('Error creating user. Probably user exists', 502);
         }
 
-        // // Set token to cookie if successfully save user to database
-        setcookie('TOKEN', $user->token, strtotime('+30 days'), '/');
+        // Set token to cookie if successfully save user to database
+        saveUserTokenToCookie($user);
+
+        // save user id and name to current session
+        saveUserToSession($user);
 
         // Return 201 created response if successfully created user
         return new EmptyResponse(201, [

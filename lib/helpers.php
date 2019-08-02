@@ -2,6 +2,7 @@
 
 namespace NotesGalleryLib\helpers;
 
+use NotesGalleryApp\Models\User;
 use Ramsey\Uuid\Uuid;
 use Ramsey\Uuid\Exception\UnsatisfiedDependencyException;
 use ReallySimpleJWT\Token;
@@ -33,5 +34,24 @@ if (!function_exists('sanitizeInput')) {
     function sanitizeInput(string $oriStr): string
     {
         return htmlspecialchars($oriStr);
+    }
+}
+
+if (!function_exists('saveUserTokenToCookie')) {
+    function saveUserTokenToCookie(User $user)
+    {
+        $days = strtotime('+30 days');
+        $path = '/';
+
+        setcookie('TOKEN', $user->token, $days, $path);
+    }
+}
+
+if (!function_exists('saveUserToSession')) {
+    function saveUserToSession(User $user)
+    {
+        $_SESSION['CURRENT_USER_ID'] = $user->id;
+        $_SESSION['CURRENT_USER_NAME'] = $user->username;
+        $_SESSION['LOGGED_IN'] = true;
     }
 }
