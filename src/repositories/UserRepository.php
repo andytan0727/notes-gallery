@@ -24,6 +24,7 @@ class UserRepository implements UserRepositoryInterface
         $user->username = $result['username'];
         $user->password = $result['password'];
         $user->token = $result['token'];
+        $user->avatarUrl = $result['avatarUrl'];
         return $user;
     }
 
@@ -47,6 +48,7 @@ class UserRepository implements UserRepositoryInterface
         $user->username = $userFromDB['username'];
         $user->password = $userFromDB['password'];
         $user->token = $userFromDB['token'];
+        $user->avatarUrl = $userFromDB['avatarUrl'];
         return $user;
     }
 
@@ -64,6 +66,8 @@ class UserRepository implements UserRepositoryInterface
             $user->id = $row[0];
             $user->username = $row[1];
             $user->password = $row[2];
+            $user->token = $row[3];
+            $user->avatarUrl = $row[4];
             $users[] = $user;
         }
 
@@ -111,6 +115,7 @@ class UserRepository implements UserRepositoryInterface
         $username = $this->db->escape($user->username);
         $password = $this->db->escape($user->password);
         $token = $this->db->escape($user->token);
+        $avatarUrl = $this->db->escape($user->avatarUrl);
 
         // sanitize user input
         $username = sanitizeInput($username);
@@ -128,6 +133,6 @@ class UserRepository implements UserRepositoryInterface
         }
 
         // save to database if user not exists before
-        return $this->db->query("INSERT INTO users VALUES ('$id', '$username', '$password', '$token')");
+        return $this->db->query("INSERT INTO users VALUES ('$id', '$username', '$password', '$token', '$avatarUrl')");
     }
 }

@@ -11,6 +11,7 @@ use Zend\Diactoros\Response\TextResponse;
 use Zend\Diactoros\Response\EmptyResponse;
 use function NotesGalleryLib\helpers\generateToken;
 use function NotesGalleryLib\helpers\generateID;
+use function NotesGalleryLib\helpers\generateAvatarUrl;
 use function NotesGalleryLib\helpers\saveUserTokenToCookie;
 use function NotesGalleryLib\helpers\saveUserToSession;
 
@@ -35,6 +36,7 @@ class UserController extends BaseController
         $user->username = $parsedBody['username'];
         $user->password = $parsedBody['password'];
         $user->token = generateToken($user->id);
+        $user->avatarUrl = generateAvatarUrl($user->id);
 
         // save to database
         $result = $this->userRepo->save($user);

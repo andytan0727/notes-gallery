@@ -31,4 +31,9 @@ class User
      * @var string
      */
     public $token;
+
+    /**
+     * Url for randomly generated avatar profile picture for a user
+     */
+    public $avatarUrl;
 }

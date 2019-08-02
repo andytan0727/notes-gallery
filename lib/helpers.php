@@ -30,6 +30,13 @@ if (!function_exists('generateToken')) {
     }
 }
 
+if (!function_exists('generateAvatarUrl')) {
+    function generateAvatarUrl(string $id)
+    {
+        return "https://avatars.dicebear.com/v2/bottts/$id.svg";
+    }
+}
+
 if (!function_exists('sanitizeInput')) {
     function sanitizeInput(string $oriStr): string
     {
@@ -52,6 +59,7 @@ if (!function_exists('saveUserToSession')) {
     {
         $_SESSION['CURRENT_USER_ID'] = $user->id;
         $_SESSION['CURRENT_USER_NAME'] = $user->username;
+        $_SESSION['CURRENT_USER_AVATAR_URL'] = $user->avatarUrl;
         $_SESSION['LOGGED_IN'] = true;
     }
 }
