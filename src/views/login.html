@@ -1,0 +1,65 @@
+{% extends "templates/base.html" %}
+
+{% block content %}
+  {% if session['LOGGED_IN'] is empty %}
+    <form action="/login" class="login-form container mt-5">
+      <div class="alert alert-warning" role="alert" style="display: none;">
+        <strong>
+          <span class="error-text"></span>
+        </strong>
+      </div>
+
+      {% include "templates/userForm.html" %}
+
+      <button class="btn btn-primary" type="submit">Login</button>
+    </form>
+  {% else %}
+    <div class="container mt-5">
+      <h2>You've logged in</h2>
+      <button class="home-btn btn btn-primary mt-3">Go back to home</button>
+    </div>
+  {% endif %}
+{% endblock %}
+
+{% block scripts %}
+  <script>
+    window.onload = function () {
+      $('.login-form').submit(function (event) {
+        event.preventDefault();
+
+        const loginForm = $(this);
+        const url = loginForm.attr('action');
+
+        $.ajax({
+          type: 'POST',
+          url,
+          data: loginForm.serialize(),
+          success: function (data, status, xhr) {
+            window.location.replace('/');
+          },
+          error: function (xhr) {
+            if (xhr.status === 401) {
+              $('.alert').css({display: 'block'});
+              $('.error-text').text('Login Failed.');
+            }
+          },
+          complete: function (xhr) {
+            loginForm.trigger('reset');
+          }
+        });
+      });
+
+      // remove login failed alert if user choose to input again
+      $('input').focus(function (event) {
+        $('.alert').css({display: 'none'});
+      });
+
+      // return to home page if user access this login page after logged in
+      $('.home-btn').click(function (event) {
+        event.preventDefault();
+
+        window.location.replace('/');
+      })
+    }
+  </script>
+{% endblock %}
