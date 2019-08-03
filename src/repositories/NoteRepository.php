@@ -99,7 +99,7 @@ class NoteRepository implements NoteRepositoryInterface
      */
     public function findNotesWithUsername()
     {
-        $result = $this->db->query('SELECT users.username, notes.title, notes.content, notes.description FROM users JOIN notes ON users.id = notes.authorId');
+        $result = $this->db->query('SELECT users.username, notes.id AS noteId, notes.title, notes.content, notes.description FROM users JOIN notes ON users.id = notes.authorId');
 
         if ($result->num_rows === 0) {
             return null;
@@ -109,9 +109,10 @@ class NoteRepository implements NoteRepositoryInterface
         foreach ($result->fetch_all() as $row) {
             $note = new stdClass();
             $note->username = $row[0];
-            $note->title = $row[1];
-            $note->content = $row[2];
-            $note->description = $row[3];
+            $note->id = $row[1];
+            $note->title = $row[2];
+            $note->content = $row[3];
+            $note->description = $row[4];
             $notesWithUsername[] = $note;
         }
 
