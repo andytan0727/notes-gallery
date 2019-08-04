@@ -6,6 +6,7 @@ use Dotenv\Dotenv;
 use Middlewares\FastRoute;
 use Middlewares\RequestHandler;
 use Narrowspark\HttpEmitter\SapiEmitter;
+use NotesGalleryApp\Middleware\AuthMiddleware;
 use Relay\Relay;
 use Zend\Diactoros\ServerRequestFactory;
 
@@ -46,8 +47,9 @@ switch ($route[0]) {
         break;
 };
 
-// Middlewares (Route & Request handler)
+// Middlewares (Custom Auth, Route & Request handler)
 $middlewareQueue = [];
+$middlewareQueue[] = new AuthMiddleware();
 $middlewareQueue[] = new FastRoute($dispatcher);
 $middlewareQueue[] = new RequestHandler($container);
 

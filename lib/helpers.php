@@ -67,6 +67,25 @@ if (!function_exists('saveUserToSession')) {
         $_SESSION['CURRENT_USER_ID'] = $user->id;
         $_SESSION['CURRENT_USER_NAME'] = $user->username;
         $_SESSION['CURRENT_USER_AVATAR_URL'] = $user->avatarUrl;
+
+        // unset if user logged out (will not be false)
         $_SESSION['LOGGED_IN'] = true;
+    }
+}
+
+if (!function_exists('getCurrentUserId')) {
+    /**
+     * Get current user id in session to prevent error due to typo
+     * if current user id is accessed regularly from $_SESSION array
+     *
+     * @return bool|null
+     */
+    function getCurrentUserId()
+    {
+        if (isset($_SESSION['CURRENT_USER_ID'])) {
+            return $_SESSION['CURRENT_USER_ID'];
+        }
+
+        return null;
     }
 }
