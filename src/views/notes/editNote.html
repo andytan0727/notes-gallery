@@ -1,10 +1,10 @@
 {% extends "templates/base.html" %}
 
 {% block content %}
-  <form action="/notes/create" class="note-form container mt-5">
+  <form method="{{ method }}" action="/notes/{{ action }}" class="note-form container mt-5">
     {{ include('templates/errorMessage.html') }}
 
-    {{ include('templates/noteForm.html') }}
+    {{ include('templates/noteForm.html', { 'note': note }) }}
 
     <button class="note-form-submit-btn btn btn-primary">Submit</button>
   </form>
@@ -17,23 +17,39 @@
         event.preventDefault();
 
         const noteForm = $(this);
+        const type = noteForm.attr('method');
         const url = noteForm.attr('action');
 
         $.ajax({
-          type: 'POST',
+          type,
           url,
           data: noteForm.serialize(),
           success: function (data, status, xhr) {
             alert('Successfully saved your note!');
+
+            const redirectUri = '{{ note is not empty }}' ? '?id={{ note.id }}' : '';
+            window.location.replace('/notes' + redirectUri);
           },
           error: function (xhr) {
             $('.alert').css({display: 'block'});
-            if (xhr.status === 409) {
-              $('.error-text').text('Please login to save!');
+            const errorTextSpan = $('.error-text');
+
+            if (xhr.status === 401) {
+              errorTextSpan.text('Seems like you are not logged in yet. Please login to continue.');
+
+              return;
+            }
+
+            if (xhr.status === 403) {
+              errorTextSpan.text('You are not authorized to perform such action.');
+
+              return;
             }
 
             if (xhr.status === 500) {
-              $('.error-text').text('Unexpected error occurred');
+              errorTextSpan.text('Unexpected error occurred');
+
+              return;
             }
           }
         });

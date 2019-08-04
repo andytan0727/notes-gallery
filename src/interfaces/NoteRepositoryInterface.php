@@ -6,7 +6,7 @@ use NotesGalleryApp\Models\Note;
 
 interface NoteRepositoryInterface
 {
-    public function findOne(string $id): Note;
+    public function findOne(string $id);
 
     public function findAll();
 
@@ -16,7 +16,7 @@ interface NoteRepositoryInterface
 
     public function findNoteAuthorById(string $authorId);
 
-    public function updateOne(Note $note);
+    public function updateOne(Note $note): bool;
 
     public function deleteOne(string $id);
 

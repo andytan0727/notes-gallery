@@ -21,12 +21,17 @@ class NoteRepository implements NoteRepositoryInterface
      * Find one note with noteId supplied
      *
      * @param string $id
-     * @return Note
+     * @return Note|null
      */
-    public function findOne(string $id): Note
+    public function findOne(string $id)
     {
         $note = new Note();
         $result = $this->db->findOneById($id, 'notes');
+
+        if (!$result) {
+            return null;
+        };
+
         $note->id = $id;
         $note->title = $result['title'];
         $note->content = $result['content'];
@@ -136,8 +141,22 @@ class NoteRepository implements NoteRepositoryInterface
         return $result->fetch_assoc();
     }
 
-    public function updateOne(Note $note)
+    /**
+     * Update one note
+     *
+     * @param Note $note
+     * @return bool
+     */
+    public function updateOne(Note $note): bool
     {
+        $sql = 'UPDATE notes SET ';
+        $sql .= 'title = ' . "'$note->title', ";
+        $sql .= 'content = ' . "'$note->content', ";
+        $sql .= 'description = ' . "'$note->description' ";
+        $sql .= 'WHERE id = ' . "'$note->id'";
+        $result = $this->db->query($sql);
+
+        return (bool) $result;
     }
 
     public function deleteOne(string $id)

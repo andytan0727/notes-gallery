@@ -10,6 +10,7 @@ use Zend\Diactoros\Response;
 use Zend\Diactoros\Response\EmptyResponse;
 use Zend\Diactoros\Response\HtmlResponse;
 use function NotesGalleryLib\helpers\generateID;
+use function NotesGalleryLib\helpers\getCurrentUserId;
 
 class NoteController extends BaseController
 {
@@ -21,24 +22,24 @@ class NoteController extends BaseController
         $this->noteRepo = $noteRepo;
     }
 
-    public function create(ServerRequestInterface $serverRequest)
+    /**
+     * Create note controller
+     *
+     * Create a new note in database based on contents provided by client
+     *
+     * @param ServerRequestInterface $serverRequest
+     * @return EmptyResponse
+     */
+    public function create(ServerRequestInterface $request): EmptyResponse
     {
-        $currentUserId = $_SESSION['CURRENT_USER_ID'];
-
-        // user needs to be logged in to save note
-        // return 409 conflict for user to resubmit the form after login
-        if (!$currentUserId) {
-            return new EmptyResponse(409);
-        }
-
-        $parsedBody = $serverRequest->getParsedBody();
+        $parsedBody = $request->getParsedBody();
 
         $note = new Note();
         $note->id = generateID();
         $note->title = $parsedBody['title'];
         $note->content = $parsedBody['content'];
         $note->description = $parsedBody['description'];
-        $note->authorId = $currentUserId;
+        $note->authorId = getCurrentUserId();
 
         $result = $this->noteRepo->save($note);
 
@@ -51,13 +52,76 @@ class NoteController extends BaseController
         return new EmptyResponse(500);
     }
 
-    public function edit()
+    /**
+     * Render view to edit note, then create or update note depending on the
+     * query params provided
+     *
+     * @param ServerRequestInterface $request
+     * @return HtmlResponse
+     *
+     */
+    public function edit(ServerRequestInterface $request): HtmlResponse
     {
-        $rendered = $this->twig->render('notes/editNote.html');
+        $queryParams = $request->getQueryParams();
 
-        return new HtmlResponse($rendered);
+        // render view to update note by id if id query param is provided
+        if (isset($queryParams['id'])) {
+            $noteId = $queryParams['id'];
+            return $this->updateNoteView($noteId);
+        }
+
+        // render default view to create new note if no query params supplied
+        return $this->createNoteView();
     }
 
+    /**
+     * Note update controller
+     *
+     * Update note specified by noteId
+     *
+     * @param ServerRequestInterface $request
+     * @return EmptyResponse
+     */
+    public function update(ServerRequestInterface $request): EmptyResponse
+    {
+        $queryParams = $request->getQueryParams();
+
+        // return 400 bad request if client failed to provide query params needed
+        if (!isset($queryParams['noteId'])) {
+            return new EmptyResponse(400);
+        }
+
+        // process only if noteId and authorId are supplied as query params
+        // authorId is mainly used for auth to make change (update)
+        $noteId = $queryParams['noteId'];
+        $authorId = $queryParams['authorId'];
+        parse_str($request->getBody()->getContents(), $reqBody);
+
+        $note = new Note();
+        $note->id = $noteId;
+        $note->title = $reqBody['title'];
+        $note->content = $reqBody['content'];
+        $note->description = $reqBody['description'];
+        $note->authorId = $authorId;
+
+        $result = $this->noteRepo->updateOne($note);
+
+        // 200 OK if operation is successfully processed on database
+        if ($result) {
+            return new EmptyResponse(200);
+        }
+
+        // 500 Internal Server Error if database operation failed
+        return new EmptyResponse(500);
+    }
+
+    /**
+     * Show note view controller
+     *
+     * Render note views based on the query params provided
+     *
+     * @param ServerRequestInterface $request
+     */
     public function show(ServerRequestInterface $request)
     {
         $queryParams = $request->getQueryParams();
@@ -78,6 +142,40 @@ class NoteController extends BaseController
         elseif (empty($queryParams)) {
             return $this->showAllNotes();
         }
+    }
+
+    /**
+     * Render a twig view to update
+     *
+     * @param string $noteId
+     * @return HtmlResponse|EmptyResponse
+     */
+    private function updateNoteView(string $noteId)
+    {
+        $note = $this->noteRepo->findOne($noteId);
+
+        if (!$note) {
+            // replace with custom404 not found page in the future
+            return new EmptyResponse(404);
+        }
+
+        $rendered = $this->twig->render('notes/editNote.html', ['method' => 'PUT', 'action' => "update?noteId=$noteId&authorId=$note->authorId", 'note' => $note]);
+
+        return new HtmlResponse($rendered);
+    }
+
+    /**
+     * Create note view
+     *
+     * @return HtmlResponse
+     */
+    private function createNoteView(): HtmlResponse
+    {
+        $currentUserId = getCurrentUserId();
+
+        $rendered = $this->twig->render('notes/editNote.html', ['method' => 'POST', 'action' => "create?authorId=$currentUserId"]);
+
+        return new HtmlResponse($rendered);
     }
 
     private function showOneByNoteId(string $noteId)
