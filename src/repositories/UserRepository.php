@@ -74,18 +74,6 @@ class UserRepository implements UserRepositoryInterface
         return $users;
     }
 
-    public function updateOne(User $user)
-    {
-    }
-
-    public function deleteOne(string $id)
-    {
-    }
-
-    public function deleteAll()
-    {
-    }
-
     /**
      * Verify user password
      *
