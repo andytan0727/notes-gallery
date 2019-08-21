@@ -159,12 +159,20 @@ class NoteRepository implements NoteRepositoryInterface
         return (bool) $result;
     }
 
-    public function deleteOne(string $id)
+    /**
+     * Delete one note by noteId
+     *
+     * @param Note $note
+     * @return boolean
+     */
+    public function deleteOne(Note $note): bool
     {
-    }
+        $id = $note->id;
+        $authorId = $note->authorId;
 
-    public function deleteAll()
-    {
+        $result = $this->db->query('DELETE FROM notes WHERE id = ' . "'$id'" . ' AND authorId = ' . "'$authorId'");
+
+        return (bool) $result;
     }
 
     /**

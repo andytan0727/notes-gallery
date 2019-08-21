@@ -2,14 +2,65 @@
 
 {% block content %}
   <div class="container mt-5">
-    <div class="header">
+    {{ include('templates/errorMessage.html') }}
+    <div class="header d-flex flex-column justify-content-end align-items-start">
+      <form action="/notes/delete?noteId={{ note.id }}&authorId={{ note.authorId }}" class="delete-note">
+        <input name="_method" type="hidden" value="delete"/>
+        <input class="btn-link btn p-0" type="submit" value="delete"/>
+      </form>
       <h1 class="display-3">{{ note.title }}</h1>
-      <p class="text-muted">{{ note.description }}</p>
     </div>
+
+    <p class="text-muted">{{ note.description }}</p>
 
     <main class="mt-5">
       {{ note.content }}
     </main>
   </div>
+{% endblock %}
 
+{% block scripts %}
+  <script>
+    window.addEventListener('load', function () {
+      $('.delete-note').submit(function (event) {
+        event.preventDefault();
+
+        const form = $(this);
+        const url = form.attr('action');
+
+        $.ajax({
+          type: 'DELETE',
+          url,
+          success: function (data, status, xhr) {
+            alert('Successfully deleted your note');
+
+            window.location.replace('/notes');
+
+          },
+          error: function (xhr) {
+            $('.alert').css({display: 'block'});
+            const errorTextSpan = $('.error-text');
+
+            if (xhr.status === 401) {
+              errorTextSpan.text('Seems like you are not logged in yet. Please login to continue.');
+
+              return;
+            }
+
+            if (xhr.status === 403) {
+              errorTextSpan.text('You are not authorized to perform such action.');
+
+              return;
+            }
+
+            if (xhr.status === 500) {
+              errorTextSpan.text('Unexpected error occurred');
+
+              return;
+            }
+          }
+        })
+      })
+    })
+  </script>
 {% endblock %}

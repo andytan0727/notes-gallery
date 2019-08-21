@@ -18,9 +18,7 @@ interface NoteRepositoryInterface
 
     public function updateOne(Note $note): bool;
 
-    public function deleteOne(string $id);
-
-    public function deleteAll();
+    public function deleteOne(Note $note): bool;
 
     public function save(Note $note);
 }

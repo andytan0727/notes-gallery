@@ -29,5 +29,6 @@ return simpleDispatcher(function (RouteCollector $r) {
         $r->addRoute('GET', '/edit', [NoteController::class, 'edit']);
         $r->addRoute('POST', '/create', [NoteController::class, 'create']);
         $r->addRoute('PUT', '/update', [NoteController::class, 'update']);
+        $r->addRoute('DELETE', '/delete', [NoteController::class, 'delete']);
     });
 });

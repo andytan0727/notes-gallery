@@ -116,6 +116,44 @@ class NoteController extends BaseController
     }
 
     /**
+     * Delete note controller
+     * 
+     * Delete one note by noteId and authorId
+     * 
+     * If the author is not logged in or is not note owner,
+     * he/she will be automatically caught by auth middleware
+     * and returns a status of 401 or 403 to client-side
+     *
+     * @param ServerRequestInterface $request
+     * @return void
+     */
+    public function delete(ServerRequestInterface $request)
+    {
+        $queryParams = $request->getQueryParams();
+
+        if (!isset($queryParams['noteId'])) {
+            return new EmptyResponse(400);
+        }
+
+        $noteId = $queryParams['noteId'];
+        $authorId = $queryParams['authorId'];
+
+        $note = new Note();
+        $note->id = $noteId;
+        $note->authorId = $authorId;
+
+        $result = $this->noteRepo->deleteOne($note);
+
+        // 200 OK if operation is successfully processed on database
+        if ($result) {
+            return new EmptyResponse(200);
+        }
+
+        // 500 Internal Server Error if database operation failed
+        return new EmptyResponse(500);
+    }
+
+    /**
      * Show note view controller
      *
      * Render note views based on the query params provided
